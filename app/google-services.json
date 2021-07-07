@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "665294146485",
+    "firebase_url": "https://hotel-85823-default-rtdb.firebaseio.com",
+    "project_id": "hotel-85823",
+    "storage_bucket": "hotel-85823.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665294146485:android:955b09242b4cc6e898a7fc",
+        "android_client_info": {
+          "package_name": "com.example.hotel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "665294146485-2dfshftgt6b1631j10a6ovn9lsgop7au.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4aiD-QFnmG6UdpHrFNJmhnWx9lGadk8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665294146485-2dfshftgt6b1631j10a6ovn9lsgop7au.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665294146485:android:a5a6824fba05d69d98a7fc",
+        "android_client_info": {
+          "package_name": "com.example.shops"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "665294146485-2dfshftgt6b1631j10a6ovn9lsgop7au.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4aiD-QFnmG6UdpHrFNJmhnWx9lGadk8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665294146485-2dfshftgt6b1631j10a6ovn9lsgop7au.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
