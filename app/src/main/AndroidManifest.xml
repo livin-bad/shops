@@ -12,6 +12,7 @@
         android:name=".AppController"
         android:theme="@style/Theme.Shops">
         <activity android:name=".ui.ShopDetailActivity"/>
+        <activity android:name=".ui.addshop.AddShopActivity"/>
         <activity android:name=".MainActivity"/>
         <activity
             android:name=".ui.splash.SplashActivity"

@@ -7,17 +7,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.shops.ui.ShopDetailActivity
 import com.example.shops.ui.TimeView
+import com.example.shops.ui.addshop.AddShopActivity
 import com.example.shops.ui.shoplist.ShopListViewModel
 import com.example.shops.ui.shoplist.Shop
 import com.example.shops.ui.theme.Closed
@@ -38,6 +45,7 @@ import com.example.shops.utils.Config
 import com.example.shops.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import kotlin.collections.mutableSetOf
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -58,26 +66,6 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    private fun subscribeObservers() {
-        viewModel.dataStateShops.observe(this, {
-            when (it.status) {
-                Resource.Status.LOADING -> {
-                    Timber.d("loading...")
-                }
-                Resource.Status.SUCCESS -> {
-                    Timber.d("success: ${it.data}")
-//                    ListView(list = it.data?: emptyList())
-                }
-                Resource.Status.ERROR -> {
-                    Timber.e("error: $${it.message}")
-
-                }
-
-            }
-        })
-
-
-    }
 
 }
 
@@ -92,15 +80,22 @@ fun Subs(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        TopAppBar(
-            title = {
-                Text(text = "Shops", color = Color.White)
-            },
-            backgroundColor = Purple500,
-            contentColor = Color.Gray,
-            elevation = 2.dp
-        )
+        /* TopAppBar(
+             title = {
+                 Text(text = "Shops", color = Color.White)
+             },
+             backgroundColor = Purple500,
+             contentColor = Color.Gray,
+             elevation = 2.dp,
+             navigationIcon = {
+                 IconButton(onClick = {}) {
+                     Icon(Icons.Filled.Menu, "Menu")
+                 }
+             },
 
+         )*/
+
+        ToolbarView()
 
         items?.let {
             when (it.status) {
@@ -135,8 +130,8 @@ fun Greeting(name: String) {
 @Composable
 fun ListView(list: List<Shop>) {
     LazyColumn() {
-        items(list.size) { position ->
-            ShopView(data = list[position], position = position)
+        items(list) { data ->
+            ShopView(data = data)
             Divider(color = Color.LightGray)
         }
 
@@ -144,7 +139,8 @@ fun ListView(list: List<Shop>) {
 }
 
 @Composable
-fun ShopView(data: Shop, position: Int, context: Context = LocalContext.current) {
+fun ShopView(data: Shop, context: Context = LocalContext.current) {
+    Timber.d("DATA: $data")
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,11 +149,11 @@ fun ShopView(data: Shop, position: Int, context: Context = LocalContext.current)
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(),
                 onClick = {
-                    Timber.d("Shp: $data")
+                    Timber.d("SHOP: $data")
                     context.startActivity(
                         Intent(context, ShopDetailActivity::class.java).putExtra(
                             Config.ID,
-                            position
+                            data.id
                         )
                     )
                 },
@@ -198,18 +194,45 @@ fun ShopView(data: Shop, position: Int, context: Context = LocalContext.current)
 
 }
 
-@Preview
 @Composable
-fun DefaultPreview() {
-    /* ShopsTheme {
-         Greeting("Android")
-     }*/
+fun ToolbarView() {
 
-    MaterialTheme() {
-//        ShopView(data = Shop("Raja shop", false))
-
-//        ListView(list = Utils.getShops())
-
-//        TimeView(time = "07:AM to 11:00 PM")
+    val context = LocalContext.current
+    var showMenu by remember {
+        mutableStateOf(false)
     }
+    TopAppBar(
+        title = {
+            Text(text = "Pets Show")
+        },
+        backgroundColor = Color.Transparent,
+        contentColor = Color.DarkGray,
+        elevation = 2.dp,
+        actions = {
+            IconButton(onClick = { showMenu = !showMenu }) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "Menu Btn",
+                    tint = Color.DarkGray
+                )
+            }
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+
+                DropdownMenuItem(onClick = {
+                    context.startActivity(Intent(context, AddShopActivity::class.java))
+                }) {
+                    Text(text = "Add Shop")
+                }
+                DropdownMenuItem(onClick = {
+                }) {
+//                        Icon(Icons.Filled.Refresh)
+                    Text(text = "About")
+                }
+            }
+        }
+    )
 }
+

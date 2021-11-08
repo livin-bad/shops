@@ -1,6 +1,6 @@
 package com.example.shops.ui
 
-import android.graphics.fonts.FontStyle
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,7 +9,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -17,34 +16,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.shops.ui.shoplist.Shop
 import com.example.shops.ui.theme.Closed
-import com.example.shops.ui.theme.LightRose
 import com.example.shops.ui.theme.Open
 import com.example.shops.utils.Utils
-import com.google.android.material.shape.Shapeable
 import dagger.hilt.android.AndroidEntryPoint
 
 
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.style.TextAlign
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.shops.R
 import com.example.shops.ui.shoplist.ShopListViewModel
+import com.example.shops.ui.view.TopAppBarView
 import com.example.shops.utils.Config
 import com.example.shops.utils.Resource
+import com.google.accompanist.glide.rememberGlidePainter
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -58,16 +56,17 @@ class ShopDetailActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
 
-                val id = intent.getIntExtra(Config.ID, 0)
+                val id = intent.getStringExtra(Config.ID)
                 viewModel.setStateShop("hotels/hotels/$id")
-                ShopDetailFireView(viewModel = viewModel)
+                ShopDetailFireView(viewModel = viewModel, this)
+
             }
         }
     }
 }
 
 @Composable
-fun ShopDetailFireView(viewModel: ShopListViewModel) {
+fun ShopDetailFireView(viewModel: ShopListViewModel, activity: Activity) {
 
     val data: Resource<Shop>? = viewModel.dataStateShop.observeAsState().value
     Column(
@@ -84,7 +83,7 @@ fun ShopDetailFireView(viewModel: ShopListViewModel) {
                 Resource.Status.SUCCESS -> {
                     Timber.d("success: ${it.data}")
 
-                    it.data?.let { it1 -> ShopViewDetail(it1) }
+                    it.data?.let { it1 -> ShopViewDetail(it1, activity) }
                 }
                 Resource.Status.ERROR -> {
                     Timber.e("error: $${it.message}")
@@ -99,8 +98,8 @@ fun ShopDetailFireView(viewModel: ShopListViewModel) {
 }
 
 @Composable
-fun ShopViewDetail(data: Shop) {
-    Text(
+fun ShopViewDetail(data: Shop, activity: Activity) {
+    /*Text(
         text = data.name ?: "--",
         fontSize = 30.sp,
         fontFamily = FontFamily.Monospace,
@@ -108,17 +107,24 @@ fun ShopViewDetail(data: Shop) {
             .padding(top = 8.dp),
         fontWeight = FontWeight.SemiBold,
         color = Color.DarkGray
-    )
+    )*/
+
+
+    TopAppBarView(string = data.name ?: "--", activity = activity)
 
     Image(
-        painter = painterResource(R.drawable.header),
-        contentDescription = null,
+        painter = rememberGlidePainter(
+            request =data.image,
+            fadeIn = true,
+        ),
+        contentDescription = "Shop image",
         modifier = Modifier
             .height(250.dp)
             .fillMaxWidth()
             .padding(16.dp)
             .clip(shape = RoundedCornerShape(20.dp)),
         contentScale = ContentScale.Crop,
+
     )
 
     Box(
@@ -144,9 +150,7 @@ fun ShopViewDetail(data: Shop) {
 
             }
 
-            data.time?.let { list ->
-                TimeListView(list = list)
-            }
+            TimeListView(list = data.time ?: emptyList())
         }
         Button(
             onClick = { /*TODO*/ },
@@ -177,17 +181,27 @@ fun TimeListView(list: List<Shop.TimeShop>) {
                 .padding(top = 20.dp, bottom = 30.dp)
         ) {
 
-            LazyColumn() {
-                items(list.size) { position ->
+            if (list.isEmpty()) {
+                Text(
+                    text = "Data Not Found ${Utils.getEmojiByUnicode(0x1F61E)} !",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily.SansSerif
+                )
+            } else {
+                LazyColumn() {
+                    items(list.size) { position ->
 //            TimeView(time = data)
-                    ConstraintLayoutDemo(
-                        time = list[position],
-                        position = position,
-                        count = list.size - 1
-                    )
-                }
+                        ConstraintLayoutDemo(
+                            time = list[position],
+                            position = position,
+                            count = list.size - 1
+                        )
+                    }
 
+                }
             }
+
         }
     }
 

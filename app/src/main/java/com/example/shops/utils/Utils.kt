@@ -1,6 +1,9 @@
 package com.example.shops.utils
 
 import com.example.shops.ui.shoplist.Shop
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 object Utils {
     fun getShops(): List<Shop> {
@@ -21,5 +24,19 @@ object Utils {
         list.add(Shop("Raja shop 13", status = true))
 
         return list
+    }
+
+    fun getEmojiByUnicode(unicode: Int): String {
+        return String(Character.toChars(unicode))
+    }
+
+    fun getTime(hourOfDay: Int, minute: Int): String {
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.set(0, 0, 0, hourOfDay, minute, 0)
+        val timeInMillis: Long = calendar.timeInMillis
+        val dateFormatter: DateFormat = SimpleDateFormat("hh:mm a")
+        val date = Date()
+        date.time = timeInMillis
+        return dateFormatter.format(date).replace("am", "AM").replace("pm", "PM")
     }
 }

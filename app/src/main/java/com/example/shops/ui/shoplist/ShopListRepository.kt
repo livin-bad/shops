@@ -12,6 +12,7 @@ import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
@@ -34,8 +35,10 @@ constructor(
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val list = mutableListOf<Shop>()
                 for (dataSnapshot in dataSnapshot.children) {
+                    Timber.d("KEY: ${dataSnapshot.key}")
                     val items = dataSnapshot.getValue(Shop::class.java)
                     items?.let {
+                        it.id=dataSnapshot.key
                         list.add(it)
 
                     }
